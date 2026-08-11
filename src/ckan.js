@@ -2,10 +2,9 @@
 // Docs: https://docs.ckan.org/en/2.9/api/
 
 // Em dev, passamos pelo proxy do Vite (configurado em vite.config.js) para
-// não esbarrar em CORS. Em produção, chamamos a API diretamente.
-const BASE_URL = import.meta.env.DEV
-  ? '/ckan-api/3/action'
-  : 'https://conselhos.teresopolis.rj.gov.br/api/3/action';
+// não esbarrar em CORS. Em produção, o rewrite do vercel.json faz o mesmo
+// papel, repassando /ckan-api para a API do CKAN.
+const BASE_URL = '/ckan-api/3/action';
 
 async function ckanGet(action, params = {}) {
   const url = new URL(`${BASE_URL}/${action}`, window.location.origin);

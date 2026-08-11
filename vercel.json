@@ -1,6 +1,10 @@
 {
   "rewrites": [
     {
+      "source": "/ckan-api/:path*",
+      "destination": "https://conselhos.teresopolis.rj.gov.br/api/:path*"
+    },
+    {
       "source": "/(.*)",
       "destination": "/index.html"
     }
