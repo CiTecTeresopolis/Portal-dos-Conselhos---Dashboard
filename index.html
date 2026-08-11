@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Portal dos Conselhos de Teresópolis - Dashboard</title>
+    <link rel="stylesheet" href="/src/style.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="topbar__inner">
+        <div class="topbar__brand">
+          <img
+            class="topbar__logo"
+            src="/ct-logo.png"
+            alt="Logo Portal dos Conselhos de Teresópolis"
+          />
+          <div>
+            <span class="topbar__eyebrow">Prefeitura Teresópolis</span>
+            <h1 class="topbar__title">Portal dos Conselhos</h1>
+          </div>
+        </div>
+        <div class="topbar__meta">
+          <span id="status-pill" class="pill pill--loading">Carregando…</span>
+          <button
+            id="refresh-btn"
+            class="btn-refresh"
+            type="button"
+            title="Atualizar dados"
+          >
+            ↻
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <main class="app">
+      <section class="kpis">
+        <div class="kpi">
+          <span class="kpi__value" id="kpi-orgs">–</span>
+          <span class="kpi__label">Organizações</span>
+        </div>
+        <div class="kpi">
+          <span class="kpi__value" id="kpi-datasets">–</span>
+          <span class="kpi__label">Conjuntos de dados</span>
+        </div>
+        <div class="kpi">
+          <span class="kpi__value" id="kpi-resources">–</span>
+          <span class="kpi__label">Arquivos totais</span>
+        </div>
+      </section>
+
+      <div class="grid">
+        <section class="card card--matrix">
+          <h2 class="card__title">Matriz de Organizações</h2>
+          <input
+            id="org-search"
+            class="tree-search"
+            type="search"
+            placeholder="Buscar organização ou conjunto…"
+            aria-label="Buscar na matriz de organizações"
+          />
+          <ul id="org-list" class="tree">
+            <li class="org-list__skeleton"></li>
+          </ul>
+        </section>
+
+        <section class="card card--charts">
+          <div class="chart-block">
+            <h2 class="card__title">Total de Arquivos por Organização</h2>
+            <p class="card__subtitle">
+              Soma dos recursos (arquivos) por organização
+            </p>
+            <div class="chart-wrap chart-wrap--bar">
+              <canvas id="chart-arquivos"></canvas>
+            </div>
+          </div>
+
+          <div class="chart-block">
+            <h2 class="card__title">
+              Nº de Conjuntos vs. Nº de Recursos por Organização
+            </h2>
+            <p class="card__subtitle">
+              Cada bolha é uma organização · tamanho = total de arquivos
+            </p>
+            <div class="chart-wrap chart-wrap--bubble">
+              <canvas id="chart-bolhas"></canvas>
+            </div>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <footer class="footer">
+      Dados via API pública do CKAN ·
+      <a
+        href="https://conselhos.teresopolis.rj.gov.br"
+        target="_blank"
+        rel="noopener"
+      >
+        conselhos.teresopolis.rj.gov.br
+      </a>
+    </footer>
+
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
