@@ -57,3 +57,6 @@ pública por padrão. Se o seu ambiente bloquear, duas opções:
 - Paleta dos gráficos: `PALETTE` em `src/aggregate.js`
 - Se quiser filtrar por organização específica ou por tags, dá para usar
   `fq` no `package_search` (ex.: `fq: 'organization:comdema'`).
+
+
+teste ...
