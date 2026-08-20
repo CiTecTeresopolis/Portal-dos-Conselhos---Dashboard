@@ -12,7 +12,7 @@ import {
 } from 'chart.js';
 
 import { fetchAllPackages } from './ckan.js';
-import { aggregateByOrganization, colorForIndex } from './aggregate.js';
+import { aggregateByOrganization, activityByOrganization, colorForIndex } from './aggregate.js';
 
 Chart.register(BarController, BarElement, BubbleController, LinearScale, CategoryScale, Tooltip, PointElement, Legend);
 
@@ -23,6 +23,8 @@ const refreshBtn = document.getElementById('refresh-btn');
 const kpiOrgs = document.getElementById('kpi-orgs');
 const kpiDatasets = document.getElementById('kpi-datasets');
 const kpiResources = document.getElementById('kpi-resources');
+const podiumEl = document.getElementById('podium');
+const podiumPeriodEl = document.getElementById('podium-period');
 
 let barChart = null;
 let bubbleChart = null;
@@ -167,6 +169,7 @@ const barValueLabels = {
 
 function renderBarChart(stats) {
   const ctx = document.getElementById('chart-arquivos');
+  ctx.parentElement.style.height = `${Math.max(300, stats.length * 38 + 20)}px`;
 
   if (barChart) barChart.destroy();
   barChart = new Chart(ctx, {
@@ -218,7 +221,7 @@ function renderBarChart(stats) {
         y: {
           title: { display: true, text: 'Organização', font: { size: 12 } },
           grid: { display: false },
-          ticks: { font: { size: 12 } },
+          ticks: { font: { size: 12 }, autoSkip: false },
         },
       },
     },
@@ -292,6 +295,50 @@ function renderBubbleChart(stats) {
 }
 
 /* ------------------------------------------------------------------ */
+/* Pódio de atividade                                                  */
+/* ------------------------------------------------------------------ */
+
+const PODIUM_MEDALS = ['🥇', '🥈', '🥉'];
+
+function renderPodium(activity) {
+  const top = activity.slice(0, 3);
+  const period = new Intl.DateTimeFormat('pt-BR', {
+    month: 'long',
+    year: 'numeric',
+  }).format(new Date());
+  podiumPeriodEl.textContent = `Arquivos publicados em ${period}`;
+
+  if (!top.length) {
+    podiumEl.innerHTML = '<p class="podium__empty">Nenhum conselho publicou arquivos neste mês.</p>';
+    return;
+  }
+
+  const order = top.length === 1 ? [0] : top.length === 2 ? [1, 0] : [1, 0, 2];
+  podiumEl.innerHTML = '';
+
+  for (const idx of order) {
+    const org = top[idx];
+    const item = document.createElement('div');
+    item.className = `podium__item podium__item--${idx + 1}`;
+
+    const medal = document.createElement('div');
+    medal.className = 'podium__medal';
+    medal.textContent = PODIUM_MEDALS[idx];
+
+    const name = document.createElement('div');
+    name.className = 'podium__name';
+    name.textContent = org.title;
+
+    const count = document.createElement('div');
+    count.className = 'podium__count';
+    count.textContent = `${org.activityCount} ${org.activityCount === 1 ? 'arquivo' : 'arquivos'}`;
+
+    item.append(medal, name, count);
+    podiumEl.appendChild(item);
+  }
+}
+
+/* ------------------------------------------------------------------ */
 /* Load                                                                */
 /* ------------------------------------------------------------------ */
 
@@ -324,6 +371,7 @@ async function loadDashboard() {
     renderKpis(stats);
     renderBarChart(stats);
     renderBubbleChart(stats);
+    renderPodium(activityByOrganization(packages));
 
     setStatus('ok', `Atualizado · ${new Date().toLocaleTimeString('pt-BR')}`);
   } catch (err) {

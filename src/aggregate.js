@@ -30,6 +30,49 @@ export function aggregateByOrganization(packages) {
   return Array.from(byOrg.values()).sort((a, b) => b.resourceCount - a.resourceCount);
 }
 
+/**
+ * Mede a atividade de cada organização em um período: conta quantos recursos
+ * (arquivos) foram publicados no mês/ano da data de referência.
+ *
+ * @param {Array} packages - resultado de fetchAllPackages()
+ * @param {Date} [date] - data de referência (padrão: hoje)
+ * @returns {Array<{id, name, title, activityCount}>} ordenado por atividade desc
+ */
+export function activityByOrganization(packages, date = new Date()) {
+  const year = date.getFullYear();
+  const month = date.getMonth();
+  const byOrg = new Map();
+
+  for (const pkg of packages) {
+    const org = pkg.organization;
+    if (!org) continue;
+
+    const count = Array.isArray(pkg.resources)
+      ? pkg.resources.filter((r) => {
+          if (!r.created) return false;
+          const d = new Date(r.created);
+          return d.getFullYear() === year && d.getMonth() === month;
+        }).length
+      : 0;
+
+    if (count === 0) continue;
+
+    if (!byOrg.has(org.id)) {
+      byOrg.set(org.id, {
+        id: org.id,
+        name: org.name,
+        title: org.title || org.name,
+        activityCount: 0,
+      });
+    }
+    byOrg.get(org.id).activityCount += count;
+  }
+
+  return Array.from(byOrg.values()).sort(
+    (a, b) => b.activityCount - a.activityCount || a.title.localeCompare(b.title, 'pt-BR'),
+  );
+}
+
 /** Paleta suave e cíclica para diferenciar organizações nos gráficos. */
 export const PALETTE = [
   '#a9c9a8', '#a8bcc9', '#d8c48a', '#d3a894', '#bcacd0',
